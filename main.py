@@ -126,6 +126,9 @@ def see_keys():
 
 def import_keys():
     key = eg.fileopenbox(msg="Select key to import", title="Import Keys")
+    if key == None:
+        eg.msgbox(msg="No key selected", title="Import Keys")
+        menu()
     gpg.import_keys(open(key, 'rb').read())
     eg.msgbox(msg="Key imported", title="Import Keys")
     eg.msgbox(msg="Imported keys: " + str(gpg.list_keys()), title="Import Keys")
