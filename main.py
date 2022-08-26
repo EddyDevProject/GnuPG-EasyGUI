@@ -66,6 +66,8 @@ def check_name(name):
     :return: a boolean value.
     """
     keys = np.array(gpg.list_keys())
+    if name == "":
+        return False
     for i in range(len(keys)):
         all_word =  keys[i]['uids'][0].split()
         if name == all_word[0]:
@@ -75,18 +77,37 @@ def check_name(name):
     return True
      
 def generate_keys():
-    name = eg.enterbox(msg="Enter name", title="Generate Keys")
-    while not check_name(name):
-        name = eg.enterbox(msg="Error alredy exists. enter name: ", title="Generate Keys")
-    email = eg.enterbox(msg="Enter email", title="Generate Keys")
-    comment = eg.enterbox(msg="Enter comment", title="Generate Keys")
-    gpg.gen_key(gpg.gen_key_input(name_real=name, name_email=email, name_comment=comment))
-    eg.msgbox(msg="Keys generated", title="Generate Keys")
-    choix = eg.buttonbox("Do you want to export keys?", "Generate Keys", ("Yes", "No"))
-    if choix == "Yes":
-        export_keys()
-    elif choix == "No":
+
+    try:
+        multichoise = ["Name*", "Email", "Comment"]
+        values = eg.multenterbox(msg="Enter name, email and comment (* required)", title="Generate Keys", fields=multichoise)
+        name = values[0]
+        email = values[1]
+        comment = values[2]
+        while not check_name(name):
+            name = eg.enterbox(msg="Error alredy exists or is empty, enter name: ", title="Generate Keys")
+        
+        try:
+            if(name != "" and name is not None):
+                #print("Name: " + name)
+                go = gpg.gen_key(gpg.gen_key_input(name_real=name, name_email=email, name_comment=comment))
+                if go:
+                    eg.msgbox(msg="Keys generated", title="Generate Keys")
+                    choix = eg.buttonbox("Do you want to export keys?", "Generate Keys", ("Yes", "No"))
+                    if choix == "Yes":
+                        export_keys()
+                    elif choix == "No":
+                        menu()
+                else:
+                    menu()
+            else:
+                menu()
+        except Exception as e:
+            eg.msgbox(msg="Error: " + str(e), title="Generate Keys")
+            menu()
+    except TypeError as e:
         menu()
+        
 
 
 def export_keys():
@@ -138,5 +159,8 @@ def import_keys():
 if __name__ == "__main__":
     gpg = pg.GPG()
     menu()
+    
+
+
 
 
