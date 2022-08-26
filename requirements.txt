@@ -1,0 +1,4 @@
+easygui==0.98.3
+python-gnupg==2.3.1
+numpy==1.23.1
+python_gnupg==0.4.9
