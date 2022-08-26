@@ -9,3 +9,6 @@ build/*
 dist/
 dist/*
 main.spec
+libs/__pycache__/*
+libs/__pycache__/
+__pycache__/*
