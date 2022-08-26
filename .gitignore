@@ -4,3 +4,8 @@ chiavi/te/
 chiavi/te/*
 test/
 test/*
+build/
+build/*
+dist/
+dist/*
+main.spec

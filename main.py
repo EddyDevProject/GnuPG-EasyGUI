@@ -37,6 +37,7 @@ def encrypt():
         fingerprint = gpg.list_keys(recipient)[0]['fingerprint']
         print("Fingerprint: " + fingerprint)
         gpg.encrypt_file(open(file, 'rb'), fingerprint, output=file + ".gpg")
+        eg.msgbox(msg="File encrypted", title="Encrypt")
     except Exception as e:
         eg.msgbox(msg="Error: " + str(e), title="Encrypt")
         menu()
