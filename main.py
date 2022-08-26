@@ -1,5 +1,6 @@
 import os
 import sys
+from unicodedata import name
 import gnupg as pg
 import easygui as eg
 import numpy as np
@@ -7,7 +8,7 @@ import numpy as np
 
 def menu():
     title = "GnuPG - Menu"
-    msg = "Version: 0.1(Alpha)\nAuthor: EddyDev\n\nChoose an option"
+    msg = "Version: 0.1.1(Alpha)\nAuthor: EddyDev\n\nChoose an option"
     choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Quit"]
     choix = eg.buttonbox(msg=msg, title=title, choices=choices)
     if choix == "Encrypt":
@@ -24,38 +25,68 @@ def menu():
         sys.exit()
 
 def encrypt():
+    """
+    It opens a file, then asks the user to choose a recipient from a list of public keys, then encrypts
+    the file with the chosen public key.
+    """
     file = eg.fileopenbox(msg="Select file to encrypt", title="Encrypt")
-    recipient = eg.enterbox(msg="Enter recipient", title="Encrypt")
-    if recipient in str(gpg.list_keys()):
-        gpg.encrypt_file(open(file, 'rb'), recipients=[recipient], output=file + ".gpg")
-        eg.msgbox(msg="File encrypted", title="Encrypt")
-    else:
-        eg.msgbox(msg="Error: Wrong recipient", title="Encrypt")
+    msg = "Choose a recipient"
+    recipient = eg.enterbox(msg=msg, title="Encrypt")
+    try:
+        print("Recipient: " + recipient)
+        fingerprint = gpg.list_keys(recipient)[0]['fingerprint']
+        print("Fingerprint: " + fingerprint)
+        gpg.encrypt_file(open(file, 'rb'), fingerprint, output=file + ".gpg")
+    except Exception as e:
+        eg.msgbox(msg="Error: " + str(e), title="Encrypt")
         menu()
     menu()
 
 
 def decrypt():
+    """
+    It opens a file, decrypts it, and then displays a message box.
+    """
     file = eg.fileopenbox(msg="Select file to decrypt", title="Decrypt")
     try:
         gpg.decrypt_file(open(file, 'rb'), output=file[:-4])
-    except:
-        eg.msgbox(msg="Error: Wrong key", title="Decrypt")
+    except Exception as e:
+        eg.msgbox(msg="Error: " + str(e), title="Decrypt")
         menu()
-    eg.msgbox(msg="File decrypted", title="Decrypt")   
+    eg.msgbox(msg="File decrypted", title="Decrypt")  
 
 
+def check_name(name):
+    """
+    It takes a name as an argument and returns True if the name is not in the list of keys, and False if
+    it is
+    
+    :param name: The name of the person you want to encrypt the message for
+    :return: a boolean value.
+    """
+    keys = np.array(gpg.list_keys())
+    for i in range(len(keys)):
+        all_word =  keys[i]['uids'][0].split()
+        if name == all_word[0]:
+            #print("1" + name + " == " +  keys[i]['uids'][0])
+            return False
+        #print("2" + name + " == " + keys[i]['uids'][0])
+    return True
+     
 def generate_keys():
     name = eg.enterbox(msg="Enter name", title="Generate Keys")
+    while not check_name(name):
+        name = eg.enterbox(msg="Error alredy exists. enter name: ", title="Generate Keys")
     email = eg.enterbox(msg="Enter email", title="Generate Keys")
     comment = eg.enterbox(msg="Enter comment", title="Generate Keys")
     gpg.gen_key(gpg.gen_key_input(name_real=name, name_email=email, name_comment=comment))
-    eg.msgbox(msg="\nPublic key: " + gpg.list_keys()[-2]['keyid'] + "\nPrivate key: " + gpg.list_keys()[-1]['keyid'] + "\nRecipients: " + str(gpg.list_keys()[-2]['uids']), title="Generate Keys")
+    eg.msgbox(msg="Keys generated", title="Generate Keys")
     choix = eg.buttonbox("Do you want to export keys?", "Generate Keys", ("Yes", "No"))
     if choix == "Yes":
         export_keys()
     elif choix == "No":
         menu()
+
 
 def export_keys():
     path = eg.diropenbox(msg="Select path to export keys", title="Export Keys")
@@ -70,16 +101,27 @@ def export_keys():
     elif choix == "No":
         menu()
 
+def delete_all_gpg_users():
+    keys = np.array(gpg.list_keys())
+    for i in range(len(keys)):
+        gpg.delete_keys(keys[i]['keyid'])
+    eg.msgbox(msg="All keys deleted", title="Delete All Keys")
+    menu()
+
 
 def see_keys():
     keys = np.array(gpg.list_keys())
     msg = "Public keys and Recipients:\n"
     for i in range(len(keys)):
         msg += "PUBLIC KEY: " + keys[i]['keyid'] + " RECIPIENTS: " + keys[i]['uids'][0] + "\n"
-    eg.msgbox(msg=msg, title="See Keys")
-    menu()
-
-
+    choix = eg.buttonbox(msg=msg, title="See Keys", choices=["Delete All Keys", "Menu", "Raw Keys"])
+    if choix == "Delete All Keys":
+        delete_all_gpg_users()
+    elif choix == "Menu":
+        menu()
+    elif choix == "Raw Keys":
+        eg.msgbox(msg=str(gpg.list_keys()), title="See Keys")
+        menu()
 
 def import_keys():
     key = eg.fileopenbox(msg="Select key to import", title="Import Keys")
