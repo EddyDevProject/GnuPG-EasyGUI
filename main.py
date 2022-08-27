@@ -77,12 +77,22 @@ def check_name(name):
             return False
         #print("2" + name + " == " + keys[i]['uids'][0])
     return True
-     
+
 def generate_keys():
+    msg = "Function temporarily disabled."
+    msg += "\nYou can generate your own keys from the terminal."
+    msg += "\ngpg --gen-key <- this will generate keys for you"
+    msg += "\ngpg --export --armor NAMECHOSEN > pub.key <- export your keys in pub.key"
+    msg += "\n\nIf you want to contribute to the development you can modify/fix the function generate_keys_old()"
+    eg.msgbox(msg=msg, title="Generate Keys")
+    menu()
+     
+def generate_keys_old():
     """
     It asks the user for a name, email and comment, then checks if the name is already in use, then
     generates a key with the given name, email and comment
     """
+    
     try:
         multichoise = ["Name*", "Email", "Comment"]
         values = eg.multenterbox(msg="Enter name, email and comment (* required)", title="Generate Keys", fields=multichoise)
@@ -119,11 +129,13 @@ def export_keys():
     """
     It exports the keys to a directory of your choice
     """
+    #bug: //TODO: #1 last key is not exported and private key is not exported
+
     path = eg.diropenbox(msg="Select path to export keys", title="Export Keys")
     with open(path + "/public.key", 'w') as f:
-        f.write(gpg.export_keys(gpg.list_keys()[0]['keyid']))
+        f.write(gpg.export_keys(gpg.list_keys()[-1]['keyid']))
     with open(path + "/private.key", 'w') as f:
-        f.write(gpg.export_keys(gpg.list_keys()[1]['keyid']))
+        f.write(gpg.export_keys(gpg.list_keys()[-1]['keyid']), secret=True)
     eg.msgbox(msg="Keys exported", title="Export Keys")
     choix = eg.buttonbox("Do you want to quit?", "Export Keys", ("Yes", "No"))
     if choix == "Yes":
