@@ -8,4 +8,4 @@ python:
 install:
 - pip install -r requirements.txt
 script: 
-- python libs/operation.py
+- python main.py
