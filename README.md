@@ -1,7 +1,7 @@
 # GnuPG EasyGui
 
 ![Issues](https://img.shields.io/github/issues/EddyDevProject/GnuPG-EasyGUI.svg)
-![Build](https://travis-ci.com/EddyDevProject/Amazon-Ref-Links-Generator-Bot.svg?branch=main)
+![Build](https://app.travis-ci.com/github/EddyDevProject/GnuPG-EasyGUI/)
 
 Simple GUI for GnuPG
 

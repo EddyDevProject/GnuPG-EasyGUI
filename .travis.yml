@@ -1,8 +1,11 @@
-language: pyhon
+language: python
+cache: pip
 branches:
   only:
   - master
 python:
-  - 3.10.3
+  - 3.5
+install:
+- pip install -r requirements.txt
 script: 
 - python libs/operation.py
