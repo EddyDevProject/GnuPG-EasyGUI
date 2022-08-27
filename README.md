@@ -1,7 +1,7 @@
 # GnuPG EasyGui
 
 ![Issues](https://img.shields.io/github/issues/EddyDevProject/GnuPG-EasyGUI.svg)
-![Build](https://app.travis-ci.com/github/EddyDevProject/GnuPG-EasyGUI/)
+![Build](https://app.travis-ci.com/EddyDevProject/GnuPG-EasyGUI.svg?branch=master)
 
 Simple GUI for GnuPG
 
@@ -15,6 +15,8 @@ Install requirements using pip
  ```
 pip install -r requirements.txt
 ```
+or using make install
+
 To open the program run from terminal
 ```
 python main.py
