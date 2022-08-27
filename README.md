@@ -1,5 +1,9 @@
 # GnuPG EasyGui
 
+[![API](https://img.shields.io/badge/Telegram%20Bot%20API-November%2020%2C%202020-36ade1.svg)](https://core.telegram.org/bots/api)
+![PHP](https://img.shields.io/badge/php-%3E%3D5.6-8892bf.svg)
+![Build](https://travis-ci.com/EddyDevProject/Amazon-Ref-Links-Generator-Bot.svg?branch=main)
+
 Simple GUI for GnuPG
 
 # Requirements
@@ -11,12 +15,10 @@ Simple GUI for GnuPG
 Install requirements using pip
  ```
 pip install -r requirements.txt
-
 ```
 To open the program run from terminal
 ```
 python main.py
-
 ```
 # Generate Keys
 To generate your keys click on the "Generate keys" button. You can decide to export them or view them later in the appropriate section.
