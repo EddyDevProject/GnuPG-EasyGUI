@@ -1,4 +1,5 @@
 import os
+from random import choices
 import sys
 import gnupg as pg
 import easygui as eg
@@ -84,8 +85,14 @@ def generate_keys():
     msg += "\ngpg --gen-key <- this will generate keys for you"
     msg += "\ngpg --export --armor NAMECHOSEN > pub.key <- export your keys in pub.key"
     msg += "\n\nIf you want to contribute to the development you can modify/fix the function generate_keys_old()"
-    eg.msgbox(msg=msg, title="Generate Keys")
-    menu()
+    choices = ["CMD for Windows", "Terminal for Linux", "Close"]
+    choix = eg.buttonbox(msg=msg, title="Generate Keys", choices=choices)
+    if choix == "CMD for Windows":
+        os.system("start cmd")
+    elif choix == "Terminal for Linux":
+        os.system("gnome-terminal")
+    elif choix == "Close":
+        menu()
      
 def generate_keys_old():
     """
