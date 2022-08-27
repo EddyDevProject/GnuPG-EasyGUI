@@ -3,6 +3,6 @@ branches:
   only:
   - master
 python:
-  -3.10.6
+  - 3.10.6
 script: 
-- python main.py
+- python libs/operation.py
