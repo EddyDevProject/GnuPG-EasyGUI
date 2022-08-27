@@ -169,7 +169,6 @@ def import_keys():
         menu()
     gpg.import_keys(open(key, 'rb').read())
     eg.msgbox(msg="Key imported", title="Import Keys")
-    eg.msgbox(msg="Imported keys: " + str(gpg.list_keys()), title="Import Keys")
     menu()
 
 
