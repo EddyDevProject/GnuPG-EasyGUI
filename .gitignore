@@ -12,3 +12,6 @@ main.spec
 libs/__pycache__/*
 libs/__pycache__/
 __pycache__/*
+__pycache__/
+.vscode/
+.vscode/*
