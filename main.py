@@ -6,6 +6,7 @@ import easygui as eg
 import numpy as np
 import threading as th
 
+
 def menu():
     """
     It displays a menu with buttons and when you click on one of them, it calls the corresponding
@@ -39,6 +40,7 @@ def encrypt():
         if file is None:
             # L'utente ha annullato la selezione del file
             eg.msgbox(msg="File not selected", title="Encrypt")
+            menu()
 
         keys = gpg.list_keys()
         names = [key['uids'][0].split()[0] for key in keys]
@@ -236,16 +238,10 @@ def import_keys():
     menu()
 
 
-def main():
-    """
-    It displays a menu with all the options
-    """
-    menu()
-
 
 if __name__ == "__main__":
     gpg = pg.GPG()
-    main()
+    menu()
 
     
 
