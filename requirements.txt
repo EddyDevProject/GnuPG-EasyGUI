@@ -1,3 +1,6 @@
 easygui==0.98.3
 numpy==1.23.1
 python-gnupg==0.4.9
+gnupg==2.3.1
+tk==0.1.0
+

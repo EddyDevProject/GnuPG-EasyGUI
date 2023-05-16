@@ -1,6 +1,10 @@
 import os
 from random import choices
 import sys
+if sys.version_info[0] < 3:
+    import Tkinter as tk
+else:
+    import tkinter as tk
 import gnupg as pg
 import easygui as eg
 import numpy as np

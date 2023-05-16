@@ -9,6 +9,7 @@ Simple GUI for GnuPG
 - easygui==0.98.3
 - numpy==1.23.1
 - python-gnupg==0.4.9
+- gnupg==2.3.1
 
 # Setup
 Install requirements using pip
@@ -20,6 +21,28 @@ or using make install
 To open the program run from terminal
 ```
 python main.py
+```
+Also install gnupg and tkinter if you don't have them already
+Linux
+```
+sudo apt-get install gnupg
+```
+```
+sudo apt-get install python3-tk
+```
+Windows
+```
+choco install gnupg
+```
+```
+choco install python3-tk
+```
+MacOS
+```
+brew install gnupg
+```
+```
+brew install python3-tk
 ```
 # Generate Keys
 To generate your keys click on the "Generate keys" button. You can decide to export them or view them later in the appropriate section.
