@@ -11,7 +11,7 @@ def menu():
     function.
     """
     title = "GnuPG - Menu"
-    msg = "Version: 0.1.2(Alpha)\nAuthor: EddyDev\n\nChoose an option"
+    msg = "Version: 0.1.5(Alpha)\nAuthor: EddyDev\n\nChoose an option"
     choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Quit"]
     choix = eg.buttonbox(msg=msg, title=title, choices=choices)
     if choix == "Encrypt":
