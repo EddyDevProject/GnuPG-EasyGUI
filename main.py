@@ -54,12 +54,20 @@ def decrypt():
     file = eg.fileopenbox(msg="Select file to decrypt", title="Decrypt")
     try:
         outputFileName = file[:-4]
-        if os.path.exists(outputFileName):
+        outputExtension = outputFileName[-4:]
+        if os.path.exists(outputFileName + outputExtension):
             i = 1
-            while os.path.exists(outputFileName + str(i)):
+            while os.path.exists(outputFileName + outputExtension):
                 i += 1
-            outputFileName += str(i)
-        gpg.decrypt_file(open(file, 'rb'), output=outputFileName)
+                outputFileName = outputFileName[:-1] + str(i)
+        outputFileName += outputExtension
+        with open(file, 'rb') as f:
+            if gpg.decrypt_file(f, passphrase=''):
+                #print("No passphrase needed")
+                gpg.decrypt_file(open(file, 'rb'), output=outputFileName)
+            else:
+                #print("Passphrase needed")
+                gpg.decrypt_file(open(file, 'rb'), passphrase=eg.passwordbox(msg="Enter passphrase", title="Decrypt"), output=outputFileName)
         if os.path.exists(outputFileName):
             eg.msgbox(msg="File decrypted and saved as " + outputFileName, title="Decrypt")
         else:
