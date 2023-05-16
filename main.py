@@ -4,6 +4,7 @@ import sys
 import gnupg as pg
 import easygui as eg
 import numpy as np
+import threading as th
 
 def menu():
     """
@@ -27,54 +28,81 @@ def menu():
     elif choix == "Quit":
         sys.exit()
 
+    
 def encrypt():
     """
     It opens a file, then asks the user to choose a recipient from a list of public keys, then encrypts
     the file with the chosen public key.
     """
-    file = eg.fileopenbox(msg="Select file to encrypt", title="Encrypt")
-    msg = "Choose a recipient"
-    recipient = eg.enterbox(msg=msg, title="Encrypt")
     try:
+        file = eg.fileopenbox(msg="Select file to encrypt", title="Encrypt")
+        if file is None:
+            # L'utente ha annullato la selezione del file
+            eg.msgbox(msg="File not selected", title="Encrypt")
+
+        keys = gpg.list_keys()
+        names = [key['uids'][0].split()[0] for key in keys]
+
+        msg = "Choose a recipient"
+        recipient = eg.choicebox(msg=msg, title="Encrypt", choices=names)
+        if recipient is None:
+            eg.msgbox(msg="Recipient not selected", title="Encrypt")
+
         print("Recipient: " + recipient)
-        fingerprint = gpg.list_keys(recipient)[0]['fingerprint']
+
+        recipient_keys = [key for key in keys if key['uids'][0].split()[0] == recipient]
+        if len(recipient_keys) == 0:
+            eg.msgbox(msg="Recipient not found", title="Encrypt")
+            return
+
+        fingerprint = recipient_keys[0]['fingerprint']
         print("Fingerprint: " + fingerprint)
-        gpg.encrypt_file(open(file, 'rb'), fingerprint, output=file + ".gpg")
+
+        encrypted_file = file + ".gpg"
+        gpg.encrypt_file(open(file, 'rb'), fingerprint, output=encrypted_file)
         eg.msgbox(msg="File encrypted", title="Encrypt")
+
     except Exception as e:
         eg.msgbox(msg="Error: " + str(e), title="Encrypt")
-        menu()
-    menu()
 
+    menu()
 
 def decrypt():
     """
     It opens a file, decrypts it, and then displays a message box.
     """
-    file = eg.fileopenbox(msg="Select file to decrypt", title="Decrypt")
     try:
+        file = eg.fileopenbox(msg="Select file to decrypt", title="Decrypt")
+        if file is None:
+            # L'utente ha annullato la selezione del file
+            eg.msgbox(msg="File not selected", title="Decrypt")
+
         outputFileName = file[:-4]
         outputExtension = outputFileName[-4:]
-        if os.path.exists(outputFileName + outputExtension):
-            i = 1
-            while os.path.exists(outputFileName + outputExtension):
-                i += 1
-                outputFileName = outputFileName[:-1] + str(i)
+
+        i = 1
+        while os.path.exists(outputFileName + outputExtension):
+            i += 1
+            outputFileName = outputFileName[:-1] + str(i)
+
         outputFileName += outputExtension
+
         with open(file, 'rb') as f:
-            if gpg.decrypt_file(f, passphrase=''):
-                #print("No passphrase needed")
-                gpg.decrypt_file(open(file, 'rb'), output=outputFileName)
-            else:
-                #print("Passphrase needed")
-                gpg.decrypt_file(open(file, 'rb'), passphrase=eg.passwordbox(msg="Enter passphrase", title="Decrypt"), output=outputFileName)
+            passphrase = ''
+            if not gpg.decrypt_file(f, passphrase=''):
+                passphrase = eg.passwordbox(msg="Enter passphrase", title="Decrypt")
+
+            gpg.decrypt_file(open(file, 'rb'), passphrase=passphrase, output=outputFileName)
+
         if os.path.exists(outputFileName):
             eg.msgbox(msg="File decrypted and saved as " + outputFileName, title="Decrypt")
         else:
             eg.msgbox(msg="File decrypted but not saved", title="Decrypt")
+
     except Exception as e:
         eg.msgbox(msg="Error: " + str(e), title="Decrypt")
-        menu() 
+
+    menu()
 
 
 def check_name(name):
@@ -208,9 +236,17 @@ def import_keys():
     menu()
 
 
+def main():
+    """
+    It displays a menu with all the options
+    """
+    menu()
+
+
 if __name__ == "__main__":
     gpg = pg.GPG()
-    menu()
+    main()
+
     
 
 
