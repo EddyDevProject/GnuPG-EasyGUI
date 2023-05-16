@@ -53,11 +53,20 @@ def decrypt():
     """
     file = eg.fileopenbox(msg="Select file to decrypt", title="Decrypt")
     try:
-        gpg.decrypt_file(open(file, 'rb'), output=file[:-4])
+        outputFileName = file[:-4]
+        if os.path.exists(outputFileName):
+            i = 1
+            while os.path.exists(outputFileName + str(i)):
+                i += 1
+            outputFileName += str(i)
+        gpg.decrypt_file(open(file, 'rb'), output=outputFileName)
+        if os.path.exists(outputFileName):
+            eg.msgbox(msg="File decrypted and saved as " + outputFileName, title="Decrypt")
+        else:
+            eg.msgbox(msg="File decrypted but not saved", title="Decrypt")
     except Exception as e:
         eg.msgbox(msg="Error: " + str(e), title="Decrypt")
-        menu()
-    eg.msgbox(msg="File decrypted", title="Decrypt")  
+        menu() 
 
 
 def check_name(name):
