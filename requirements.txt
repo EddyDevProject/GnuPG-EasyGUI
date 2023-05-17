@@ -1,5 +1,4 @@
 numpy
 python-gnupg
 tk
-webbrowser
 
