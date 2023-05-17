@@ -86,7 +86,10 @@ def encrypt():
 
         encrypted_file = file + ".gpg"
         gpg.encrypt_file(open(file, 'rb'), fingerprint, output=encrypted_file)
-        show_alert("Encrypt", "File encrypted")
+        if os.path.exists(encrypted_file):
+            show_alert("Encrypt", "File encrypted and saved as " + encrypted_file)
+        else:
+            show_alert("Encrypt", "File encrypted but not saved")
 
     except Exception as e:
         show_alert("Encrypt", "Error: " + str(e))
