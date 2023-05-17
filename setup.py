@@ -9,7 +9,31 @@ from setuptools import setup
 
 APP = ['main.py']
 DATA_FILES = []
-OPTIONS = {}
+OPTIONS = {
+    'argv_emulation': False,
+    'packages': ['gnupg', 'tkinter', 'numpy'],
+    'iconfile': 'icon.icns',
+    'plist': {
+        'CFBundleName': 'GnuPG',
+        'CFBundleDisplayName': 'GnuPG',
+        'CFBundleGetInfoString': "GnuPG",
+        'CFBundleIdentifier': "com.eddydev.gnupg",
+        'CFBundleVersion': "0.1.9",
+        'CFBundleShortVersionString': "0.1.9",
+        'CFBundleExecutable': "GnuPG",
+        'CFBundleIconFile': "icon.icns",
+        'CFBundleDocumentTypes': [
+            {
+                'CFBundleTypeName': "GnuPG",
+                'CFBundleTypeRole': "Editor",
+                'LSHandlerRank': "Owner",
+                'LSItemContentTypes': [
+                    "com.eddydev.gnupg"
+                ]
+            }
+        ]
+    }
+}
 
 setup(
     app=APP,
