@@ -39,18 +39,21 @@ def menu():
     choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Quit"]
 
     def handle_choice(choice):
-        window.destroy()
         if choice == "Encrypt":
             encrypt()
         elif choice == "Decrypt":
             decrypt()
         elif choice == "Generate Keys":
+            window.destroy()
             generate_keys()
         elif choice == "Import Keys":
+            window.destroy()
             import_keys()
         elif choice == "See Keys":
+            window.destroy()
             see_keys()
         elif choice == "Quit":
+            window.destroy()
             sys.exit()
 
     for choice in choices:
@@ -68,7 +71,6 @@ def encrypt():
         file = filedialog.askopenfilename(title="Select file to encrypt")
         if not file:
             show_alert("Encrypt", "File not selected")
-            menu()
             return
 
         keys = gpg.list_keys()
@@ -77,7 +79,6 @@ def encrypt():
         recipient = simpledialog.askstring("Encrypt", "Select recipient")
         if not recipient:
             show_alert("Encrypt", "Recipient not selected")
-            menu()
             return
 
         print("Recipient: " + recipient)
@@ -85,7 +86,6 @@ def encrypt():
         recipient_keys = [key for key in keys if key['uids'][0].split()[0] == recipient]
         if len(recipient_keys) == 0:
             show_alert("Encrypt", "Recipient not found")
-            menu()
             return
 
         fingerprint = recipient_keys[0]['fingerprint']
@@ -114,7 +114,6 @@ def encrypt():
 
     except Exception as e:
         show_alert("Encrypt", "Error: " + str(e))
-    menu()
             
 
 def decrypt():
@@ -125,13 +124,11 @@ def decrypt():
         file = filedialog.askopenfilename(title="Select file to decrypt")
         if not file:
             show_alert("Decryption", "File not selected")
-            menu()
             return
 
         passphrase = simpledialog.askstring("Decryption", "Enter the passphrase", show="*")
         if not passphrase:
             show_alert("Decryption", "Passphrase not entered")
-            menu()
             return
 
         with open(file, 'rb') as f:
@@ -144,7 +141,6 @@ def decrypt():
                 tips += "3. Check if the file is a .gpg file\n"
                 tips += "4. Try to move the file to another folder like the desktop"
                 show_alert("Decryption", "Error decrypting the file\n" + tips)
-                menu()
                 return
 
             decrypted_file_path = file[:-4]
@@ -159,8 +155,6 @@ def decrypt():
 
     except Exception as e:
         show_alert("Decryption", "Error: " + str(e))
-
-    menu()
 
 
 
