@@ -23,7 +23,7 @@ def menu():
     window.geometry("350x300")
     window.resizable(False, False)
     window.title("GnuPG - Menu")
-    label = tk.Label(window, text="Version: 0.1.7(Alpha)\nAuthor: EddyDev\nLicense: MIT\n")
+    label = tk.Label(window, text="Version: 0.1.9(Alpha)\nAuthor: EddyDev\nLicense: MIT\n")
     link1 = tk.Label(window, text="Github Project", fg="red", cursor="hand2")
     label.pack()
     link1.bind("<Button-1>", lambda e: callback("https://github.com/EddyDevProject/GnuPG-EasyGUI"))
@@ -84,8 +84,22 @@ def encrypt():
         fingerprint = recipient_keys[0]['fingerprint']
         print("Fingerprint: " + fingerprint)
 
-        encrypted_file = file + ".gpg"
-        gpg.encrypt_file(open(file, 'rb'), fingerprint, output=encrypted_file)
+       
+        output_path = os.path.dirname(file) 
+        output_file_filename = os.path.basename(file) + ".gpg"
+        encrypted_file = os.path.join(output_path, output_file_filename)
+
+        
+        with open(file, 'rb') as f:
+            #check trust of the key if not trusted ask user to trust
+            if not gpg.encrypt_file(f, recipients=[fingerprint], output=encrypted_file):
+                response = messagebox.askquestion("Encrypt", "The key is not trusted. Do you want to trust it?")
+                if response == "yes":
+                    gpg.trust_keys(fingerprint, "TRUST_ULTIMATE")
+                    gpg.encrypt_file(f, recipients=[fingerprint], output=encrypted_file)
+                else:
+                    return
+                
         if os.path.exists(encrypted_file):
             show_alert("Encrypt", "File encrypted and saved as " + encrypted_file)
         else:
@@ -94,43 +108,49 @@ def encrypt():
     except Exception as e:
         show_alert("Encrypt", "Error: " + str(e))
     menu()
+            
 
 def decrypt():
     """
-    It opens a file, decrypts it, and then displays a message box.
+    Opens a selected encrypted file and prompts the user to enter the passphrase to decrypt it.
     """
     try:
-        file = filedialog.askopenfilename(title="Select file to decrypt", filetypes=(("GPG files", "*.gpg"),))
+        file = filedialog.askopenfilename(title="Select file to decrypt")
         if not file:
-            show_alert("Decrypt", "File not selected")
+            show_alert("Decryption", "File not selected")
             menu()
             return
 
-        outputFileName = file[:-4]
-        outputExtension = outputFileName[-4:]
-
-        i = 1
-        while os.path.exists(outputFileName + outputExtension):
-            i += 1
-            outputFileName = outputFileName[:-1] + str(i)
-
-        outputFileName += outputExtension
+        passphrase = simpledialog.askstring("Decryption", "Enter the passphrase", show="*")
+        if not passphrase:
+            show_alert("Decryption", "Passphrase not entered")
+            menu()
+            return
 
         with open(file, 'rb') as f:
-            passphrase = ''
-            if not gpg.decrypt_file(f, passphrase=''):
-                passphrase = simpledialog.askstring("Decrypt", "Enter passphrase", show='*')
+            decrypted_data = gpg.decrypt_file(f, passphrase=passphrase)
 
-            gpg.decrypt_file(open(file, 'rb'), passphrase=passphrase, output=outputFileName)
+            if not decrypted_data.ok:
+                show_alert("Decryption", "Error decrypting the file")
+                menu()
+                return
 
-        if os.path.exists(outputFileName):
-            show_alert("Decrypt", "File decrypted and saved as " + outputFileName)
-        else:
-            show_alert("Decrypt", "File decrypted but not saved")
+            decrypted_file_path = file[:-4]
+            extension = decrypted_file_path.split(".")[-1]
+            decrypted_file_path = decrypted_file_path[:-len(extension)-1]
+            decrypted_file_path += "_decrypted." + extension
+
+            with open(decrypted_file_path, 'wb') as decrypted_file:
+                decrypted_file.write(decrypted_data.data)
+
+        show_alert("Decryption", "File decrypted and saved as " + decrypted_file_path)
 
     except Exception as e:
-        show_alert("Decrypt", "Error: " + str(e))
+        show_alert("Decryption", "Error: " + str(e))
+
     menu()
+
+
 
 def generate_keys():
     """
