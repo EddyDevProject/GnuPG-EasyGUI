@@ -17,6 +17,7 @@ def menu():
     """
     window = tk.Tk()
     window.geometry("350x300")
+    window.resizable(False, False)
     window.title("GnuPG - Menu")
 
     label = tk.Label(window, text="Version: 0.1.7(Alpha)\nAuthor: EddyDev")
