@@ -6,10 +6,10 @@
 Simple GUI for GnuPG
 
 # Requirements
-- easygui==0.98.3
 - numpy==1.23.1
 - python-gnupg==0.4.9
 - gnupg==2.3.1
+- webbrowser (built-in)
 
 # Setup
 Install requirements using pip
