@@ -4,11 +4,15 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
 import gnupg as pg
 import numpy as np
+import webbrowser
 
 gpg = pg.GPG()
 
 def show_alert(title, message):
     messagebox.showinfo(title, message)
+
+def callback(url):
+   webbrowser.open_new_tab(url)
 
 def menu():
     """
@@ -19,9 +23,14 @@ def menu():
     window.geometry("350x300")
     window.resizable(False, False)
     window.title("GnuPG - Menu")
-
-    label = tk.Label(window, text="Version: 0.1.7(Alpha)\nAuthor: EddyDev")
+    text = "Version: 0.1.7(Alpha)"
+    #Author: EddyDev (https://eddydev.xyz)  
+    text = text + "\nAuthor: EddyDev"
+    label = tk.Label(window, text="Version: 0.1.7(Alpha)\nAuthor: ")
     label.pack()
+    link1 = tk.Label(window, text="EddyDev", fg="blue", cursor="hand2")
+    link1.pack()
+    link1.bind("<Button-1>", lambda e: callback("https://github.com/EddyDevProject"))
 
     choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Quit"]
 
