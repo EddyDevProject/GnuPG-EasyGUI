@@ -23,9 +23,16 @@ def menu():
     window.geometry("350x300")
     window.resizable(False, False)
     window.title("GnuPG - Menu")
-    label = tk.Label(window, text="Version: 0.1.9(Alpha)\nAuthor: EddyDev\nLicense: MIT\n")
+    text = "Version: 0.1.9(Alpha)"
+    text += "\nAuthor: EddyDev"
+    text += "\nLicense: MIT"
+    text += "\nContributors: "
+    label = tk.Label(window, text=text)
+    contr = tk.Label(window, text="- Federica Capobianco", fg="orange", cursor="hand2")
+    contr.bind("<Button-1>", lambda e: callback("https://github.com/federicaCapobianco"))
     link1 = tk.Label(window, text="Github Project", fg="red", cursor="hand2")
     label.pack()
+    contr.pack()
     link1.bind("<Button-1>", lambda e: callback("https://github.com/EddyDevProject/GnuPG-EasyGUI"))
     link1.pack()
 
