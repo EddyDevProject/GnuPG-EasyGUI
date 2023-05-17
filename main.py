@@ -131,36 +131,57 @@ def decrypt():
 
 def generate_keys():
     """
-    It displays a message with instructions for generating keys.
+    Show window to generate keys with the name and email of the user and the passphrase and save it as a .asc file
     """
-    msg = "Function temporarily disabled."
-    msg += "\nYou can generate your own keys from the terminal."
-    msg += "\ngpg --gen-key <- this will generate keys for you"
-    msg += "\ngpg --export --armor NAMECHOSEN > pub.key <- export your keys in pub.key"
-    msg += "\n\nIf you want to contribute to the development you can modify/fix the function generate_keys_old()"
-    choices = ["CMD for Windows", "Terminal for Linux", "Close"]
-
-    def handle_choice(choice):
-        if choice == "CMD for Windows":
-            os.system("start cmd")
-        elif choice == "Terminal for Linux":
-            os.system("gnome-terminal")
-        elif choice == "Close":
-            window.destroy()
-            menu()
-
     window = tk.Tk()
+    window.geometry("350x300")
+    window.resizable(False, False)
     window.title("GnuPG - Generate Keys")
-    window.geometry("650x200")
-    label = tk.Label(window, text=msg)
-    label.pack()
 
-    for choice in choices:
-        button = tk.Button(window, text=choice, command=lambda choice=choice: handle_choice(choice))
-        button.pack()
+    def generate_keys_action():
+        try:
+            name = name_entry.get()
+            email = email_entry.get()
+            passphrase = passphrase_entry.get()
 
+            if name == "" or email == "" or passphrase == "":
+                show_alert("Generate Keys", "Fill all the fields")
+                return
+
+            input_data = gpg.gen_key_input(name_email=name + " <" + email + ">", passphrase=passphrase)
+            key = gpg.gen_key(input_data)
+
+            if key:
+                with open(name + ".asc", 'w') as f:
+                    f.write(gpg.export_keys(key.fingerprint))
+                show_alert("Generate Keys", "Keys generated and saved as " + name + ".asc")
+            else:
+                show_alert("Generate Keys", "Error generating keys")
+
+        except Exception as e:
+            show_alert("Generate Keys", "Error: " + str(e))
+
+    name_label = tk.Label(window, text="Name")
+    name_label.pack()
+    name_entry = tk.Entry(window)
+    name_entry.pack()
+
+    email_label = tk.Label(window, text="Email")
+    email_label.pack()
+    email_entry = tk.Entry(window)
+    email_entry.pack()
+
+    passphrase_label = tk.Label(window, text="Passphrase")
+    passphrase_label.pack()
+    passphrase_entry = tk.Entry(window, show="*")
+    passphrase_entry.pack()
+
+    button = tk.Button(window, text="Generate Keys", command=generate_keys_action)
+    button.pack()
+    back_button = tk.Button(window, text="Menu", command=lambda: [window.destroy(), menu()])
+    back_button.pack()
+    
     window.mainloop()
-    menu()
 
 def delete_all_gpg_users():
     """
