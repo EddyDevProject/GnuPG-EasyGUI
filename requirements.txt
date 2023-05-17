@@ -1,5 +1,5 @@
-easygui
 numpy
 python-gnupg
 tk
+webbrowser
 

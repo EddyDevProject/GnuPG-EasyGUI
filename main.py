@@ -1,60 +1,84 @@
 import os
-from random import choices
 import sys
+import tkinter as tk
+from tkinter import filedialog, messagebox, simpledialog
 import gnupg as pg
-import easygui as eg
 import numpy as np
-import threading as th
+import webbrowser
 
+gpg = pg.GPG()
+
+def show_alert(title, message):
+    messagebox.showinfo(title, message)
+
+def callback(url):
+   webbrowser.open_new_tab(url)
 
 def menu():
     """
     It displays a menu with buttons and when you click on one of them, it calls the corresponding
     function.
     """
-    title = "GnuPG - Menu"
-    msg = "Version: 0.1.5(Alpha)\nAuthor: EddyDev\n\nChoose an option"
-    choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Quit"]
-    choix = eg.buttonbox(msg=msg, title=title, choices=choices)
-    if choix == "Encrypt":
-        encrypt()
-    elif choix == "Decrypt":
-        decrypt()
-    elif choix == "Generate Keys":
-        generate_keys()
-    elif choix == "Import Keys":
-        import_keys()
-    elif choix == "See Keys":
-        see_keys()
-    elif choix == "Quit":
-        sys.exit()
+    window = tk.Tk()
+    window.geometry("350x300")
+    window.resizable(False, False)
+    window.title("GnuPG - Menu")
+    label = tk.Label(window, text="Version: 0.1.7(Alpha)\nAuthor: EddyDev\nLicense: MIT\n")
+    link1 = tk.Label(window, text="Github Project", fg="red", cursor="hand2")
+    label.pack()
+    link1.bind("<Button-1>", lambda e: callback("https://github.com/EddyDevProject/GnuPG-EasyGUI"))
+    link1.pack()
 
-    
+    choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Quit"]
+
+    def handle_choice(choice):
+        window.destroy()
+        if choice == "Encrypt":
+            encrypt()
+        elif choice == "Decrypt":
+            decrypt()
+        elif choice == "Generate Keys":
+            generate_keys()
+        elif choice == "Import Keys":
+            import_keys()
+        elif choice == "See Keys":
+            see_keys()
+        elif choice == "Quit":
+            sys.exit()
+
+    for choice in choices:
+        button = tk.Button(window, text=choice, command=lambda choice=choice: handle_choice(choice))
+        button.pack()
+
+    window.mainloop()
+
 def encrypt():
     """
     It opens a file, then asks the user to choose a recipient from a list of public keys, then encrypts
     the file with the chosen public key.
     """
     try:
-        file = eg.fileopenbox(msg="Select file to encrypt", title="Encrypt")
-        if file is None:
-            # L'utente ha annullato la selezione del file
-            eg.msgbox(msg="File not selected", title="Encrypt")
+        file = filedialog.askopenfilename(title="Select file to encrypt")
+        if not file:
+            show_alert("Encrypt", "File not selected")
             menu()
+            return
 
         keys = gpg.list_keys()
         names = [key['uids'][0].split()[0] for key in keys]
 
-        msg = "Choose a recipient"
-        recipient = eg.choicebox(msg=msg, title="Encrypt", choices=names)
-        if recipient is None:
-            eg.msgbox(msg="Recipient not selected", title="Encrypt")
+        recipient = simpledialog.askstring("Encrypt", "Select recipient")
+        if not recipient:
+            show_alert("Encrypt", "Recipient not selected")
+            menu()
+            return
 
         print("Recipient: " + recipient)
 
         recipient_keys = [key for key in keys if key['uids'][0].split()[0] == recipient]
         if len(recipient_keys) == 0:
-            eg.msgbox(msg="Recipient not found", title="Encrypt")
+            show_alert("Encrypt", "Recipient not found")
+            menu()
             return
 
         fingerprint = recipient_keys[0]['fingerprint']
@@ -62,11 +86,10 @@ def encrypt():
 
         encrypted_file = file + ".gpg"
         gpg.encrypt_file(open(file, 'rb'), fingerprint, output=encrypted_file)
-        eg.msgbox(msg="File encrypted", title="Encrypt")
+        show_alert("Encrypt", "File encrypted")
 
     except Exception as e:
-        eg.msgbox(msg="Error: " + str(e), title="Encrypt")
-
+        show_alert("Encrypt", "Error: " + str(e))
     menu()
 
 def decrypt():
@@ -74,10 +97,11 @@ def decrypt():
     It opens a file, decrypts it, and then displays a message box.
     """
     try:
-        file = eg.fileopenbox(msg="Select file to decrypt", title="Decrypt")
-        if file is None:
-            # L'utente ha annullato la selezione del file
-            eg.msgbox(msg="File not selected", title="Decrypt")
+        file = filedialog.askopenfilename(title="Select file to decrypt", filetypes=(("GPG files", "*.gpg"),))
+        if not file:
+            show_alert("Decrypt", "File not selected")
+            menu()
+            return
 
         outputFileName = file[:-4]
         outputExtension = outputFileName[-4:]
@@ -92,121 +116,61 @@ def decrypt():
         with open(file, 'rb') as f:
             passphrase = ''
             if not gpg.decrypt_file(f, passphrase=''):
-                passphrase = eg.passwordbox(msg="Enter passphrase", title="Decrypt")
+                passphrase = simpledialog.askstring("Decrypt", "Enter passphrase", show='*')
 
             gpg.decrypt_file(open(file, 'rb'), passphrase=passphrase, output=outputFileName)
 
         if os.path.exists(outputFileName):
-            eg.msgbox(msg="File decrypted and saved as " + outputFileName, title="Decrypt")
+            show_alert("Decrypt", "File decrypted and saved as " + outputFileName)
         else:
-            eg.msgbox(msg="File decrypted but not saved", title="Decrypt")
+            show_alert("Decrypt", "File decrypted but not saved")
 
     except Exception as e:
-        eg.msgbox(msg="Error: " + str(e), title="Decrypt")
-
+        show_alert("Decrypt", "Error: " + str(e))
     menu()
 
-
-def check_name(name):
-    """
-    It takes a name as an argument and returns True if the name is not in the list of keys, and False if
-    it is
-    
-    :param name: The name of the person you want to encrypt the message for
-    :return: a boolean value.
-    """
-    keys = np.array(gpg.list_keys())
-    if name == "":
-        return False
-    for i in range(len(keys)):
-        all_word =  keys[i]['uids'][0].split()
-        if name == all_word[0]:
-            #print("1" + name + " == " +  keys[i]['uids'][0])
-            return False
-        #print("2" + name + " == " + keys[i]['uids'][0])
-    return True
-
 def generate_keys():
+    """
+    It displays a message with instructions for generating keys.
+    """
     msg = "Function temporarily disabled."
     msg += "\nYou can generate your own keys from the terminal."
     msg += "\ngpg --gen-key <- this will generate keys for you"
     msg += "\ngpg --export --armor NAMECHOSEN > pub.key <- export your keys in pub.key"
     msg += "\n\nIf you want to contribute to the development you can modify/fix the function generate_keys_old()"
     choices = ["CMD for Windows", "Terminal for Linux", "Close"]
-    choix = eg.buttonbox(msg=msg, title="Generate Keys", choices=choices)
-    if choix == "CMD for Windows":
-        os.system("start cmd")
-    elif choix == "Terminal for Linux":
-        os.system("gnome-terminal")
-    elif choix == "Close":
-        menu()
-     
-def generate_keys_old():
-    """
-    It asks the user for a name, email and comment, then checks if the name is already in use, then
-    generates a key with the given name, email and comment
-    """
-    
-    try:
-        multichoise = ["Name*", "Email", "Comment"]
-        values = eg.multenterbox(msg="Enter name, email and comment (* required)", title="Generate Keys", fields=multichoise)
-        name = values[0]
-        email = values[1]
-        comment = values[2]
-        while not check_name(name):
-            name = eg.enterbox(msg="Error alredy exists or is empty, enter name: ", title="Generate Keys")
-        
-        try:
-            if(name != "" and name is not None):
-                #print("Name: " + name)
-                go = gpg.gen_key(gpg.gen_key_input(name_real=name, name_email=email, name_comment=comment))
-                if go:
-                    eg.msgbox(msg="Keys generated", title="Generate Keys")
-                    choix = eg.buttonbox("Do you want to export keys?", "Generate Keys", ("Yes", "No"))
-                    if choix == "Yes":
-                        export_keys()
-                    elif choix == "No":
-                        menu()
-                else:
-                    menu()
-            else:
-                menu()
-        except Exception as e:
-            eg.msgbox(msg="Error: " + str(e), title="Generate Keys")
+
+    def handle_choice(choice):
+        if choice == "CMD for Windows":
+            os.system("start cmd")
+        elif choice == "Terminal for Linux":
+            os.system("gnome-terminal")
+        elif choice == "Close":
+            window.destroy()
             menu()
-    except TypeError as e:
-        menu()
-        
 
+    window = tk.Tk()
+    window.title("GnuPG - Generate Keys")
+    window.geometry("650x200")
+    label = tk.Label(window, text=msg)
+    label.pack()
 
-def export_keys():
-    """
-    It exports the keys to a directory of your choice
-    """
-    #bug: //TODO: #1 last key is not exported and private key is not exported
+    for choice in choices:
+        button = tk.Button(window, text=choice, command=lambda choice=choice: handle_choice(choice))
+        button.pack()
 
-    path = eg.diropenbox(msg="Select path to export keys", title="Export Keys")
-    with open(path + "/public.key", 'w') as f:
-        f.write(gpg.export_keys(gpg.list_keys()[-1]['keyid']))
-    with open(path + "/private.key", 'w') as f:
-        f.write(gpg.export_keys(gpg.list_keys()[-1]['keyid']), secret=True)
-    eg.msgbox(msg="Keys exported", title="Export Keys")
-    choix = eg.buttonbox("Do you want to quit?", "Export Keys", ("Yes", "No"))
-    if choix == "Yes":
-        sys.exit()
-    elif choix == "No":
-        menu()
+    window.mainloop()
+    menu()
 
 def delete_all_gpg_users():
     """
     It deletes all the keys in the keyring
     """
     keys = np.array(gpg.list_keys())
-    for i in range(len(keys)):
-        gpg.delete_keys(keys[i]['keyid'])
-    eg.msgbox(msg="All keys deleted", title="Delete All Keys")
+    for key in keys:
+        gpg.delete_keys(key['keyid'])
+    messagebox.showinfo("Delete All Keys", "All keys deleted")
     menu()
-
 
 def see_keys():
     """
@@ -214,37 +178,33 @@ def see_keys():
     """
     keys = np.array(gpg.list_keys())
     msg = "Public keys and Recipients:\n"
-    for i in range(len(keys)):
-        msg += "PUBLIC KEY: " + keys[i]['keyid'] + " RECIPIENTS: " + keys[i]['uids'][0] + "\n"
-    choix = eg.buttonbox(msg=msg, title="See Keys", choices=["Delete All Keys", "Menu", "Raw Keys"])
-    if choix == "Delete All Keys":
-        delete_all_gpg_users()
-    elif choix == "Menu":
-        menu()
-    elif choix == "Raw Keys":
-        eg.msgbox(msg=str(gpg.list_keys()), title="See Keys")
-        menu()
+    for key in keys:
+        msg += "PUBLIC KEY: " + key['keyid'] + " RECIPIENTS: " + key['uids'][0] + "\n"
+
+    messagebox.showinfo("See Keys", msg)
+    menu()
 
 def import_keys():
     """
     It asks the user to select a key to import, and if the user selects a key, it imports it
     """
-    key = eg.fileopenbox(msg="Select key to import", title="Import Keys")
-    if key == None:
-        eg.msgbox(msg="No key selected", title="Import Keys")
-        menu()
-    gpg.import_keys(open(key, 'rb').read())
-    eg.msgbox(msg="Key imported", title="Import Keys")
+    file_path = filedialog.askopenfilename(title="Select key to import", filetypes=[("All Files", "*.*")])
+
+    if file_path:
+        with open(file_path, 'rb') as file:
+            import_result = gpg.import_keys(file.read())
+
+        # check if the key was imported
+        if import_result.count == 1:
+            message = "Key imported"
+        else:
+            message = "Key not imported"
+
+        show_alert("Import Keys", message)
+    else:
+        show_alert("Import Keys", "No key selected")
+
     menu()
-
-
 
 if __name__ == "__main__":
-    gpg = pg.GPG()
     menu()
-
-    
-
-
-
-
