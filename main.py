@@ -138,7 +138,12 @@ def decrypt():
             decrypted_data = gpg.decrypt_file(f, passphrase=passphrase)
 
             if not decrypted_data.ok:
-                show_alert("Decryption", "Error decrypting the file")
+                tips = "Tips: \n"
+                tips += "1. Check if the passphrase is correct\n"
+                tips += "2. Check if the file is encrypted\n"
+                tips += "3. Check if the file is a .gpg file\n"
+                tips += "4. Try to move the file to another folder like the desktop"
+                show_alert("Decryption", "Error decrypting the file\n" + tips)
                 menu()
                 return
 
