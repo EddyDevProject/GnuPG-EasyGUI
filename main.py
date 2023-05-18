@@ -5,6 +5,7 @@ from tkinter import filedialog, messagebox, simpledialog
 import gnupg as pg
 import numpy as np
 import webbrowser
+import time
 
 gpg = pg.GPG()
 
