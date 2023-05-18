@@ -226,13 +226,22 @@ def see_keys():
     """
     It displays a list of all the public keys and their recipients
     """
+    window = tk.Tk()
+    window.geometry("700x350")
+    window.title("GnuPG - See Keys")
+
     keys = np.array(gpg.list_keys())
     msg = "Public keys and Recipients:\n"
     for key in keys:
         msg += "PUBLIC KEY: " + key['keyid'] + " RECIPIENTS: " + key['uids'][0] + "\n"
 
-    messagebox.showinfo("See Keys", msg)
-    menu()
+    label = tk.Label(window, text=msg)
+    label.pack()
+
+    back_button = tk.Button(window, text="Menu", command=lambda: [window.destroy(), menu()])
+    back_button.pack()
+
+    window.mainloop()
 
 def import_keys():
     """
@@ -257,4 +266,8 @@ def import_keys():
     menu()
 
 if __name__ == "__main__":
-    menu()
+    try:
+        menu()
+    except Exception as e:
+        show_alert("Error", str(e))
+
