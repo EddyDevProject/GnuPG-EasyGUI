@@ -5,6 +5,9 @@ from tkinter import filedialog, messagebox, simpledialog
 import gnupg as pg
 import numpy as np
 import webbrowser
+import requests
+
+version = "0.2.0"
 
 gpg = pg.GPG()
 
@@ -20,10 +23,10 @@ def menu():
     function.
     """
     window = tk.Tk()
-    window.geometry("350x300")
+    window.geometry("350x320")
     window.resizable(False, False)
     window.title("GnuPG - Menu")
-    text = "Version: 0.1.9(Alpha)"
+    text = "Version: " + version
     text += "\nAuthor: EddyDev"
     text += "\nLicense: MIT"
     text += "\nContributors: "
@@ -36,7 +39,7 @@ def menu():
     link1.bind("<Button-1>", lambda e: callback("https://github.com/EddyDevProject/GnuPG-EasyGUI"))
     link1.pack()
 
-    choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Quit"]
+    choices = ["Encrypt", "Decrypt", "Generate Keys", "Import Keys", "See Keys", "Update", "Quit"]
 
     def handle_choice(choice):
         if choice == "Encrypt":
@@ -52,6 +55,9 @@ def menu():
         elif choice == "See Keys":
             window.destroy()
             see_keys()
+        elif choice == "Update":
+            window.destroy()
+            see_repo_update()
         elif choice == "Quit":
             window.destroy()
             sys.exit()
@@ -264,6 +270,21 @@ def import_keys():
         show_alert("Import Keys", "No key selected")
 
     menu()
+
+def see_repo_update():
+    """
+    See if there is an update in the repository https://github.com/EddyDevProject/GnuPG-EasyGUI
+    """
+    try:
+        data = requests.get("https://raw.githubusercontent.com/EddyDevProject/GnuPG-EasyGUI/main/version.txt").text
+        print(data)
+        if data > version:
+            show_alert("Update", "There is an update available")
+        else:
+            show_alert("Update", "There is no update available")
+    except Exception as e:
+        show_alert("Update", "Error: " + str(e))
+        
 
 if __name__ == "__main__":
     try:
