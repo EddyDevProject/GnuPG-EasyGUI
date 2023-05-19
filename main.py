@@ -276,7 +276,7 @@ def see_repo_update():
     See if there is an update in the repository https://github.com/EddyDevProject/GnuPG-EasyGUI
     """
     try:
-        data = requests.get("https://raw.githubusercontent.com/EddyDevProject/GnuPG-EasyGUI/main/version.txt").text
+        data = requests.get("https://raw.githubusercontent.com/EddyDevProject/GnuPG-EasyGUI/master/version.txt").text
         print(data)
         if data > version:
             show_alert("Update", "There is an update available")
@@ -284,7 +284,7 @@ def see_repo_update():
             show_alert("Update", "There is no update available")
     except Exception as e:
         show_alert("Update", "Error: " + str(e))
-        
+
 
 if __name__ == "__main__":
     try:
