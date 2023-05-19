@@ -7,7 +7,7 @@ import numpy as np
 import webbrowser
 import requests
 
-version = "0.2.0"
+version = "0.2.1"
 
 gpg = pg.GPG()
 
