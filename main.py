@@ -7,7 +7,7 @@ import numpy as np
 import webbrowser
 import requests
 
-version = "0.2.1"
+version = "0.2.2"
 
 gpg = pg.GPG()
 
@@ -50,7 +50,6 @@ def menu():
             window.destroy()
             generate_keys()
         elif choice == "Import Keys":
-            window.destroy()
             import_keys()
         elif choice == "See Keys":
             window.destroy()
@@ -268,8 +267,6 @@ def import_keys():
         show_alert("Import Keys", message)
     else:
         show_alert("Import Keys", "No key selected")
-
-    menu()
 
 def see_repo_update():
     """
