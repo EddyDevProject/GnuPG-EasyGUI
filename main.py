@@ -7,7 +7,7 @@ import numpy as np
 import webbrowser
 import requests
 
-version = "0.2.3"
+version = "0.2.4"
 
 gpg = pg.GPG()
 
@@ -274,11 +274,12 @@ def see_repo_update():
     """
     try:
         data = requests.get("https://raw.githubusercontent.com/EddyDevProject/GnuPG-EasyGUI/master/version.txt").text
-        print(data)
         if data > version:
             show_alert("Update", "There is an update available: new version " + data)
+            menu()
         else:
             show_alert("Update", "There is no update available")
+            menu()
     except Exception as e:
         show_alert("Update", "Error: " + str(e))
 
