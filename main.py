@@ -274,7 +274,6 @@ def see_repo_update():
     """
     try:
         data = requests.get("https://raw.githubusercontent.com/EddyDevProject/GnuPG-EasyGUI/master/version.txt").text
-        print(data)
         if data > version:
             show_alert("Update", "There is an update available: new version " + data)
             menu()
