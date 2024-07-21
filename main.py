@@ -7,7 +7,7 @@ import numpy as np
 import webbrowser
 import requests
 
-version = "0.2.5"
+version = "0.2.6"
 
 gpg = pg.GPG()
 
@@ -87,7 +87,7 @@ def encrypt():
             return
 
         print("Recipient: " + recipient)
-
+        print("Names: " + str(names))
         recipient_keys = [key for key in keys if key['uids'][0].split()[0] == recipient]
         if len(recipient_keys) == 0:
             show_alert("Encrypt", "Recipient not found")
@@ -182,7 +182,7 @@ def generate_keys():
                 show_alert("Generate Keys", "Fill all the fields")
                 return
 
-            input_data = gpg.gen_key_input(name_email=name + " <" + email + ">", passphrase=passphrase)
+            input_data = gpg.gen_key_input(name_real=name, name_email=email, passphrase=passphrase)
             key = gpg.gen_key(input_data)
 
             if key:
