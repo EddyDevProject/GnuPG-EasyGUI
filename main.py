@@ -7,7 +7,7 @@ import numpy as np
 import webbrowser
 import requests
 
-version = "0.2.4"
+version = "0.2.5"
 
 gpg = pg.GPG()
 
@@ -268,18 +268,30 @@ def import_keys():
     else:
         show_alert("Import Keys", "No key selected")
 
+def compare_versions(data, version):
+    """
+    It compares two versions and returns True if the data is greater than the version
+    """
+    data = data.split(".")
+    version = version.split(".")
+    for i in range(len(data)):
+        if int(data[i]) > int(version[i]):
+            return True
+    return False
+
 def see_repo_update():
     """
     See if there is an update in the repository https://github.com/EddyDevProject/GnuPG-EasyGUI
     """
     try:
         data = requests.get("https://raw.githubusercontent.com/EddyDevProject/GnuPG-EasyGUI/master/version.txt").text
-        if data > version:
+        if compare_versions(data, version):
             show_alert("Update", "There is an update available: new version " + data)
             menu()
         else:
             show_alert("Update", "There is no update available")
             menu()
+
     except Exception as e:
         show_alert("Update", "Error: " + str(e))
 
