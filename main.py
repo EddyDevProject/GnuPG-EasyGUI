@@ -9,7 +9,7 @@ import requests
 
 version = "0.2.6"
 
-gpg = pg.GPG()
+gpg = pg.GPG(gpgbinary="C:\Program Files (x86)\GnuPG\\bin\gpg.exe")
 
 def show_alert(title, message):
     messagebox.showinfo(title, message)
