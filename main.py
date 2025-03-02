@@ -9,7 +9,16 @@ import requests
 
 version = "0.2.6"
 
-gpg = pg.GPG(gpgbinary="C:\Program Files (x86)\GnuPG\\bin\gpg.exe")
+def get_gpg_binary():
+    if sys.platform.startswith('win'):
+        # Windows
+        gpg_binary = r"C:\\Program Files (x86)\\GnuPG\bin\\gpg.exe"
+    else:
+        # macOS and Linux
+        gpg_binary = None  # Defaults to system's GnuPG binary
+    return gpg_binary
+
+gpg = pg.GPG(gpgbinary=get_gpg_binary())
 
 def show_alert(title, message):
     messagebox.showinfo(title, message)
