@@ -9,16 +9,23 @@ import requests
 
 version = "0.2.6"
 
-def get_gpg_binary():
-    if sys.platform.startswith('win'):
-        # Windows
-        gpg_binary = r"C:\\Program Files (x86)\\GnuPG\bin\\gpg.exe"
-    else:
-        # macOS and Linux
-        gpg_binary = None  # Defaults to system's GnuPG binary
-    return gpg_binary
 
-gpg = pg.GPG(gpgbinary=get_gpg_binary())
+def get_system_os():
+    if sys.platform.startswith('win'):
+        return "win"
+    elif sys.platform.startswith('linux'):
+        return "linux"
+    elif sys.platform.startswith('darwin'):
+        return "mac"
+    else:
+        return None
+    
+if(get_system_os() == "win"):
+     gpg = pg.GPG(gpgbinary=r"C:\\Program Files (x86)\\GnuPG\bin\\gpg.exe")
+else:
+    gpg = pg.GPG()
+
+
 
 def show_alert(title, message):
     messagebox.showinfo(title, message)
@@ -40,7 +47,7 @@ def menu():
     text += "\nLicense: MIT"
     text += "\nContributors: "
     label = tk.Label(window, text=text)
-    contr = tk.Label(window, text="- Federica Capobianco", fg="orange", cursor="hand2")
+    contr = tk.Label(window, text="- Fegderica Capobianco", fg="orange", cursor="hand2")
     contr.bind("<Button-1>", lambda e: callback("https://github.com/federicaCapobianco"))
     link1 = tk.Label(window, text="Github Project", fg="red", cursor="hand2")
     label.pack()
