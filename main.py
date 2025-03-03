@@ -7,7 +7,7 @@ import numpy as np
 import webbrowser
 import requests
 
-version = "0.2.6"
+version = "0.2.7"
 
 
 def get_system_os():
