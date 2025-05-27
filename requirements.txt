@@ -2,3 +2,4 @@ numpy
 python-gnupg
 tk
 requests
+customtkinter==5.2.2

@@ -1,77 +1,90 @@
-# GnuPG EasyGui
+# GnuPG - EasyGUI
 
 ![Issues](https://img.shields.io/github/issues/EddyDevProject/GnuPG-EasyGUI.svg)
 ![Build](https://app.travis-ci.com/EddyDevProject/GnuPG-EasyGUI.svg?branch=master)
 
-Simple GUI for GnuPG
+A user-friendly graphical interface for managing GnuPG (GPG) operations, including file encryption/decryption and key management. This application has been modernized with a `CustomTkinter` UI for a better user experience.
 
-# Requirements
+## Key Features
 
-- numpy==1.23.1
-- python-gnupg==0.4.9
-- gnupg==2.3.1
-- webbrowser (built-in)
-- requests
+*   **Modern User Interface:** Built with `CustomTkinter` for a contemporary look and feel.
+*   **File Encryption & Decryption:** Securely encrypt files for specific recipients and decrypt files using your GPG keys and passphrase.
+*   **Efficient Large File Handling:** Optimized for memory efficiency when encrypting and decrypting large files.
+*   **GPG Key Pair Generation:** Easily generate new GPG key pairs (public and private).
+*   **Key Import:** Import GPG public keys from files.
+*   **Key Listing:** View details of all GPG keys in your keyring (Recipient, Key ID, Fingerprint).
+*   **Update Checker:** Built-in functionality to check for new application versions from the GitHub repository.
 
-# Setup
+## Requirements
 
-Install requirements using pip
+1.  **Python 3.x:** Ensure you have Python 3 installed.
+2.  **GnuPG (GPG):** GnuPG must be installed on your system and accessible via the `gpg` command in your system's PATH.
 
-```
-pip install -r requirements.txt
-```
+    *   **Linux:**
+        ```bash
+        sudo apt-get update
+        sudo apt-get install gnupg
+        ```
+    *   **macOS:**
+        ```bash
+        brew install gnupg
+        ```
+    *   **Windows:**
+        *   Download and install Gpg4win from [gpg4win.org](https://www.gpg4win.org/). This package includes GnuPG, Kleopatra (a certificate manager), and GpgOL (an Outlook plugin). Ensure `gpg.exe` is in your system PATH.
+        *   Alternatively, via Chocolatey (ensure Chocolatey is installed):
+            ```powershell
+            choco install gpg4win
+            ```
+            Or for just the GnuPG command line tools:
+            ```powershell
+            choco install gnupg
+            ```
 
-or using make install
+3.  **Python Libraries:** These will be installed via `requirements.txt`.
+    *   `customtkinter`
+    *   `numpy`
+    *   `python-gnupg`
+    *   `tk` (usually comes with Python, but listed for clarity)
+    *   `requests`
 
-To open the program run from terminal
+## How to Run
 
-```
-python main.py
-```
+1.  **Clone the Repository (Optional):**
+    If you haven't downloaded the project files yet:
+    ```bash
+    git clone https://github.com/EddyDevProject/GnuPG-EasyGUI.git
+    cd GnuPG-EasyGUI
+    ```
 
-Also install gnupg and tkinter if you don't have them already
-Linux
+2.  **Install Dependencies:**
+    Navigate to the project directory in your terminal and run:
+    ```bash
+    pip install -r requirements.txt
+    ```
+    *Note: On some systems, you might need to use `pip3` instead of `pip`.*
 
-```
-sudo apt-get install gnupg
-```
+3.  **Run the Application:**
+    ```bash
+    python main.py
+    ```
+    *Note: On some systems, you might need to use `python3` instead of `python`.*
 
-```
-sudo apt-get install python3-tk
-```
+## Usage Overview
 
-Windows
+*   **Generate Keys:** Click "Generate Keys," fill in your details (Name, Email, Passphrase), and save the exported public key (`.asc` file) to a location of your choice.
+*   **See Keys:** View a list of all GPG keys currently in your keyring.
+*   **Import Keys:** Import GPG keys from `.asc` files or other key file formats.
+*   **Encrypt File:** Select a file to encrypt and choose a recipient from your list of public keys. The encrypted file will be saved with a `.gpg` extension.
+*   **Decrypt File:** Select a `.gpg` file to decrypt. You will be prompted for the passphrase associated with your private key. The decrypted file will be saved with `_decrypted` appended to its original name (before the extension).
+*   **Update:** Check if a newer version of the application is available.
 
-```
-choco install gnupg
-```
+## License
 
-```
-choco install python3-tk
-```
+This project is licensed under the MIT License.
 
-MacOS
+## Author & Contributors
 
-```
-brew install gnupg
-```
-
-```
-brew install python3-tk
-```
-
-# Generate Keys
-
-To generate your keys click on the "Generate keys" button. You can decide to export them or view them later in the appropriate section.
-
-# Import Keys
-
-To import your keys click on the "Import keys" button.
-
-# Encrypt File
-
-To encrypt a file click on the "Encrypt File" button. You will be prompted for a recipients that matches the key of the person who sent you the file. A new file with the .gpg extension will be generated.
-
-# Decrypt File
-
-To decrypt a file click on the "Decrypt File" button. You will not be asked for anything as you must have already imported the key. A new file with the original extension will be generated.
+*   **Author:** EddyDev ([EddyDevProject on GitHub](https://github.com/EddyDevProject))
+*   **Contributors:**
+    *   Federica Capobianco ([federicaCapobianco on GitHub](https://github.com/federicaCapobianco))
+    *   (And other contributors via pull requests and suggestions)
